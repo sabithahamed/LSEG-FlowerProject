@@ -42,7 +42,7 @@ void Exchange::ReadOrders() {
 
             std::string validationError = order.validate();
             if (!validationError.empty()) {
-                generateExecutionReport(order, "1", price, qty, validationError);
+                generateExecutionReport(order, "1", price, qty, getCurrentTimestamp(), validationError);
                 continue;
             }
 
@@ -60,7 +60,7 @@ void Exchange::ReadOrders() {
     file.close();
 }
 
-void Exchange::generateExecutionReport(const Order& order, const std::string& status, double price, int quantity, const std::string& reason) {
+void Exchange::generateExecutionReport(const Order& order, const std::string& status, double price, int quantity, const std::string& Timestamp, const std::string& reason) {
     ExecutionReport report;
     report.OrderID = order.getOrderID();
     report.ClientOrderID = order.getClientOrderID();
@@ -70,16 +70,7 @@ void Exchange::generateExecutionReport(const Order& order, const std::string& st
     report.Quantity = quantity;
     report.Status = std::stoi(status);
     report.Reason = reason;
-
-    // Get current time in specified format
-    auto now = std::chrono::system_clock::now();
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
-    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-    std::tm* now_tm = std::localtime(&now_c);
-
-    std::stringstream ss;
-    ss << std::put_time(now_tm, "%Y%m%d-%H%M%S") << "." << std::setfill('0') << std::setw(3) << ms.count();
-    report.TransactionTime = ss.str();
+    report.TransactionTime = Timestamp;
 
     executionReports.push(report);
 }
@@ -113,4 +104,15 @@ void Exchange::printExecutionReports() {
 
 int Exchange::getNextOrderID() {
     return ++orderCounter;
+}
+
+std::string Exchange::getCurrentTimestamp() {
+    auto now = std::chrono::system_clock::now();
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    std::tm* now_tm = std::localtime(&now_c);
+
+    std::stringstream ss;
+    ss << std::put_time(now_tm, "%Y%m%d-%H%M%S") << "." << std::setfill('0') << std::setw(3) << ms.count();
+    return ss.str();
 }
