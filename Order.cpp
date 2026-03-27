@@ -1,4 +1,5 @@
 #include "Order.h"
+#include <cctype>
 
 std::string Order::getOrderID() const {
     return OrderID;
@@ -30,6 +31,10 @@ void Order::reduceQuantity(int filledQuantity) {
 
 std::string Order::validate() const {
     if (ClientOrderID.empty()) return "Invalid client order ID";
+    if (ClientOrderID.length() > 7) return "Invalid client order ID";
+    for (char c : ClientOrderID) {
+        if (!std::isalnum(c)) return "Invalid client order ID";
+    }
     if (Instrument != "Rose" && Instrument != "Lavender" && Instrument != "Lotus" && Instrument != "Tulip" && Instrument != "Orchid") {
         return "Invalid instrument";
     }

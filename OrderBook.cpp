@@ -8,36 +8,34 @@
 void OrderBook::processOrder(Order& order, Exchange& exchange) {
     OrderBookSide& oppositeSide = (order.getSide() == 1) ? sellSide : buySide;
     OrderBookSide& ownSide = (order.getSide() == 1) ? buySide : sellSide;
+    bool matched = false; // Track if we had any matches for reporting purposes
 
-    while (!oppositeSide.isEmpty()) {
+    while (!oppositeSide.isEmpty() && isMatchingOrder(order)) {
+        matched = true;
         Order& topOrder = oppositeSide.getTopOrder();
-        bool isMatch = (order.getSide() == 1) ? (order.getPrice() >= topOrder.getPrice()) 
-                                              : (order.getPrice() <= topOrder.getPrice());
 
-        if (isMatch) {
-            int fillQty = std::min(order.getQuantity(), topOrder.getQuantity());
-            double matchPrice = topOrder.getPrice();
+        int fillQty = std::min(order.getQuantity(), topOrder.getQuantity());
+        double matchPrice = topOrder.getPrice();
 
-            order.reduceQuantity(fillQty);
-            topOrder.reduceQuantity(fillQty);
+        order.reduceQuantity(fillQty);
+        topOrder.reduceQuantity(fillQty);
 
-            // Generate reports for both sides
-            exchange.generateExecutionReport(order, (order.getQuantity() == 0) ? "2" : "3", matchPrice, fillQty); 
-            exchange.generateExecutionReport(topOrder, (topOrder.getQuantity() == 0) ? "2" : "3", matchPrice, fillQty);
+        // Generate reports for both sides
+        exchange.generateExecutionReport(order, (order.getQuantity() == 0) ? "2" : "3", matchPrice, fillQty); 
+        exchange.generateExecutionReport(topOrder, (topOrder.getQuantity() == 0) ? "2" : "3", matchPrice, fillQty);
 
-            if (topOrder.getQuantity() == 0) {
-                oppositeSide.removeOrder(topOrder);
-            }
-
-            if (order.getQuantity() == 0) break;
-        } else {
-            break;
+        if (topOrder.getQuantity() == 0) {
+            oppositeSide.removeOrder(topOrder);
         }
+
+        if (order.getQuantity() == 0) break;
     }
 
     if (order.getQuantity() > 0) {
         ownSide.addOrder(order);
-        exchange.generateExecutionReport(order, "0", order.getPrice(), order.getQuantity());
+        if (!matched) {
+            exchange.generateExecutionReport(order, "0", order.getPrice(), order.getQuantity());
+        }
     }
 }
 
