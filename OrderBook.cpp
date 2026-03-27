@@ -20,9 +20,11 @@ void OrderBook::processOrder(Order& order, Exchange& exchange) {
         order.reduceQuantity(fillQty);
         topOrder.reduceQuantity(fillQty);
 
+        std::string timestamp = exchange.getCurrentTimestamp();
+
         // Generate reports for both sides
-        exchange.generateExecutionReport(order, (order.getQuantity() == 0) ? "2" : "3", matchPrice, fillQty); 
-        exchange.generateExecutionReport(topOrder, (topOrder.getQuantity() == 0) ? "2" : "3", matchPrice, fillQty);
+        exchange.generateExecutionReport(order, (order.getQuantity() == 0) ? "2" : "3", matchPrice, fillQty, timestamp); 
+        exchange.generateExecutionReport(topOrder, (topOrder.getQuantity() == 0) ? "2" : "3", matchPrice, fillQty, timestamp);
 
         if (topOrder.getQuantity() == 0) {
             oppositeSide.removeOrder(topOrder);
@@ -34,7 +36,7 @@ void OrderBook::processOrder(Order& order, Exchange& exchange) {
     if (order.getQuantity() > 0) {
         ownSide.addOrder(order);
         if (!matched) {
-            exchange.generateExecutionReport(order, "0", order.getPrice(), order.getQuantity());
+            exchange.generateExecutionReport(order, "0", order.getPrice(), order.getQuantity(), exchange.getCurrentTimestamp()); // New order report
         }
     }
 }
