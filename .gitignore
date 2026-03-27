@@ -1,0 +1,18 @@
+# Binaries
+FlowerExchange
+FlowerExchange.exe
+
+# Objects
+*.o
+
+# Logs and Reports
+execution_rep.csv
+compile_errors.txt
+
+# Temp and Spec
+*.txt
+*.pdf
+
+# IDE folders
+.vscode/
+.idea/
