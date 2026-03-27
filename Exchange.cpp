@@ -101,7 +101,7 @@ void Exchange::printExecutionReports() {
                 << report.ClientOrderID << ","
                 << report.Instrument << ","
                 << report.Side << ","
-                << (report.Status == 0 ? "New" : (report.Status == 1 ? "Rejected" : (report.Status == 2 ? "Fill" : "Pfill"))) << ","
+                << report.Status << ","
                 << report.Quantity << ","
                 << std::fixed << std::setprecision(2) << report.Price << ","
                 << report.Reason << ","
