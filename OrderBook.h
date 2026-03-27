@@ -1,4 +1,7 @@
+#pragma once
 #include "OrderBookSide.h"
+
+class Exchange;
 
 class OrderBook {
 private:
@@ -6,7 +9,8 @@ private:
     OrderBookSide sellSide;
 
 public:
-    void processOrder(const Order& order);
+    OrderBook() : buySide(1), sellSide(2) {}
+    void processOrder(Order& order, Exchange& exchange);
     bool isMatchingOrder(const Order& order);
 
 };

@@ -1,3 +1,4 @@
+#pragma once
 #include "OrderBook.h"
 #include "ExecutionReport.h"
 #include <queue>
@@ -10,8 +11,9 @@ private:
     std::queue<ExecutionReport> executionReports;
     int orderCounter;
 public:
+    Exchange() : orderCounter(0) {}
     void ReadOrders();
-    void generateExecutionReport(const Order& order, const std::string& reason);
+    void generateExecutionReport(const Order& order, const std::string& status, double price, int quantity, const std::string& reason = "");
     void processExecutionReport(const ExecutionReport& report);
     void printExecutionReports();
     int getNextOrderID();
