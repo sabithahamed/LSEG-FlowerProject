@@ -12,7 +12,7 @@ private:
     int orderCounter;
 public:
     Exchange() : orderCounter(0) {}
-    void ReadOrders();
+    void ReadOrders(std::string filename );
     void generateExecutionReport(const Order& order, const std::string& status, double price, int quantity, const std::string& Timestamp, const std::string& reason = "");
     void processExecutionReport(const ExecutionReport& report);
     void printExecutionReports();

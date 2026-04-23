@@ -9,10 +9,10 @@
 #include <iomanip>
 #include <algorithm>
 
-void Exchange::ReadOrders() {
-    std::ifstream file("orders.csv");
+void Exchange::ReadOrders(std::string filename) {
+    std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Error: Could not open orders.csv" << std::endl;
+        std::cerr << "Error: Could not open " << filename << std::endl;
         return;
     }
 
